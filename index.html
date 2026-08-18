@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>31 de diciembre</title>
+
+<meta name="theme-color" content="#0f1726" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="31 dic" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="icon" type="image/png" href="favicon-32.png" />
+<link rel="manifest" href="manifest.json" />
+
+<meta name="description" content="Cuenta regresiva hasta el 31 de diciembre." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<canvas id="sky"></canvas>
+
+<main class="wrap">
+  <p class="kicker" id="kicker">Faltan</p>
+
+  <div class="clock" id="clock" aria-live="polite">
+    <div class="unit">
+      <span class="num" id="d">00</span>
+      <span class="label">días</span>
+    </div>
+    <div class="colon">·</div>
+    <div class="unit">
+      <span class="num" id="h">00</span>
+      <span class="label">horas</span>
+    </div>
+    <div class="colon">·</div>
+    <div class="unit">
+      <span class="num" id="m">00</span>
+      <span class="label">min</span>
+    </div>
+    <div class="colon">·</div>
+    <div class="unit">
+      <span class="num" id="s">00</span>
+      <span class="label">seg</span>
+    </div>
+  </div>
+
+  <p class="target">31 de diciembre, 2026 · Madrid</p>
+
+  <p class="message" id="message"></p>
+  <p class="message-meta" id="messageMeta" hidden></p>
+
+  <p class="done-message" id="doneMessage" hidden></p>
+</main>
+
+<script src="script.js"></script>
+<script type="module" src="live.js"></script>
+</body>
+</html>

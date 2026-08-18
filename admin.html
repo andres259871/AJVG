@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>Escribir</title>
+<meta name="robots" content="noindex, nofollow" />
+
+<meta name="theme-color" content="#0f1726" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Escribir" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="icon" type="image/png" href="favicon-32.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+<main class="admin-wrap">
+
+  <section id="loginView">
+    <p class="kicker">Entrar</p>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="correo" autocomplete="username" required />
+      <input type="password" id="password" placeholder="contraseña" autocomplete="current-password" required />
+      <button type="submit">Entrar</button>
+    </form>
+    <p id="loginError" class="admin-error" hidden></p>
+  </section>
+
+  <section id="writeView" hidden>
+    <p class="kicker">Escribirle</p>
+    <textarea id="text" maxlength="400" placeholder="Escribe aquí…"></textarea>
+    <p class="admin-count"><span id="count">0</span>/400</p>
+    <button id="sendBtn">Enviar</button>
+    <p id="sendStatus" class="admin-status" hidden></p>
+
+    <div class="admin-last">
+      <p class="admin-last-label">Último mensaje enviado</p>
+      <p id="lastText">—</p>
+      <p id="lastMeta" class="admin-meta"></p>
+    </div>
+
+    <button id="logoutBtn" class="admin-logout" type="button">Cerrar sesión</button>
+  </section>
+
+</main>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
