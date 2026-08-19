@@ -8,10 +8,11 @@
 // Firebase console → ⚙️ Configuración del proyecto → General → baja hasta
 // "Tus apps" → app web → "Config".
 export const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_PROYECTO.firebaseapp.com",
-  projectId: "TU_PROYECTO",
-  storageBucket: "TU_PROYECTO.appspot.com",
-  messagingSenderId: "TU_SENDER_ID",
-  appId: "TU_APP_ID",
+  apiKey: "AIzaSyAvkPTbbwFx7IerSIj6yKtIJz_UQbeqBh8",
+  authDomain: "ajvg-8958d.firebaseapp.com",
+  projectId: "ajvg-8958d",
+  storageBucket: "ajvg-8958d.firebasestorage.app",
+  messagingSenderId: "266148275672",
+  appId: "1:266148275672:web:41407a24a0cae8dc61fead",
 };
+ 
