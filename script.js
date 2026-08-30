@@ -24,7 +24,6 @@ const els = {
   s: document.getElementById("s"),
   clock: document.getElementById("clock"),
   message: document.getElementById("message"),
-  messageMeta: document.getElementById("messageMeta"),
   doneMessage: document.getElementById("doneMessage"),
   kicker: document.getElementById("kicker"),
 };
@@ -40,13 +39,8 @@ function messageForDays(daysLeft) {
   return MESSAGES[MESSAGES.length - 1].text;
 }
 
-// live.js (opcional — el sitio funciona sin él) escribe aquí cuando llega
-// un mensaje nuevo desde el panel privado. Si nunca se configura Firebase,
-// estas variables se quedan en null para siempre y el mensaje automático
-// de arriba sigue mandando, sin que nada se rompa.
-window.liveMessage = null;
-window.liveMessageAt = null;
-
+// Se comparte con live.js (los mensajes de Andrés y Anne más abajo en la
+// página usan el mismo formato de "hace X").
 function relativeTime(date) {
   const diffMin = Math.floor((Date.now() - date.getTime()) / 60000);
   if (diffMin < 1) return "justo ahora";
@@ -55,6 +49,7 @@ function relativeTime(date) {
   if (h < 24) return `hace ${h} h`;
   return `hace ${Math.floor(h / 24)} d`;
 }
+window.relativeTime = relativeTime;
 
 function tick() {
   const now = Date.now();
@@ -82,14 +77,7 @@ function tick() {
   els.m.textContent = pad(minutes);
   els.s.textContent = pad(seconds);
 
-  if (window.liveMessage) {
-    els.message.textContent = window.liveMessage;
-    els.messageMeta.textContent = window.liveMessageAt ? relativeTime(window.liveMessageAt) : "";
-    els.messageMeta.hidden = false;
-  } else {
-    els.message.textContent = messageForDays(days);
-    els.messageMeta.hidden = true;
-  }
+  els.message.textContent = messageForDays(days);
 }
 
 let timer;
