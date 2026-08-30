@@ -7,7 +7,7 @@ const TARGET = new Date("2026-12-31T00:00:00+01:00").getTime();
 // Mensaje según cuánto falta. Edita el texto de cada tramo aquí — es el
 // único lugar donde vive.
 const MESSAGES = [
-  { minDays: 90, text: "Hipotéticamente, estoy emocionado de verte." },
+  { minDays: 90, text: "Cada vez un dia menos." },
   { minDays: 30, text: "Ya se puede contar en semanas, no solo en números grandes." },
   { minDays: 7, text: "Esto ya empieza a sentirse cerca." },
   { minDays: 2, text: "Esta semana sí toca hacer maletas." },
