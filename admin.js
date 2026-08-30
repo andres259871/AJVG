@@ -13,6 +13,8 @@ const els = {
   sendStatus: document.getElementById("sendStatus"),
   lastText: document.getElementById("lastText"),
   lastMeta: document.getElementById("lastMeta"),
+  anneLastText: document.getElementById("anneLastText"),
+  anneLastMeta: document.getElementById("anneLastMeta"),
   logoutBtn: document.getElementById("logoutBtn"),
 };
 
@@ -33,14 +35,13 @@ if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "TU_API_KEY") {
     const { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } = await import(
       "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js"
     );
-    const { getFirestore, doc, setDoc, onSnapshot, serverTimestamp } = await import(
-      "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"
-    );
+    const { getFirestore, collection, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp } =
+      await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js");
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const docRef = doc(db, "love", "latest");
+    const messagesRef = collection(db, "messages");
 
     els.loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -73,23 +74,43 @@ if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "TU_API_KEY") {
       return `hace ${Math.floor(h / 24)} d`;
     };
 
-    onSnapshot(docRef, (snap) => {
-      const data = snap.exists() ? snap.data() : null;
-      if (data && data.text) {
-        els.lastText.textContent = data.text;
-        els.lastMeta.textContent = data.sentAt ? relativeTime(data.sentAt.toDate()) : "";
-      } else {
-        els.lastText.textContent = "Todavía no has enviado nada.";
-        els.lastMeta.textContent = "";
-      }
-    });
+    onSnapshot(
+      query(messagesRef, orderBy("sentAt", "desc"), limit(40)),
+      (snap) => {
+        let lastAndres = null;
+        let lastAnne = null;
+        snap.forEach((docSnap) => {
+          const data = docSnap.data();
+          if (!data || !data.text) return;
+          if (!lastAndres && data.from === "andres") lastAndres = data;
+          if (!lastAnne && data.from === "anne") lastAnne = data;
+        });
+
+        if (lastAndres) {
+          els.lastText.textContent = lastAndres.text;
+          els.lastMeta.textContent = lastAndres.sentAt ? relativeTime(lastAndres.sentAt.toDate()) : "";
+        } else {
+          els.lastText.textContent = "Todavía no has enviado nada.";
+          els.lastMeta.textContent = "";
+        }
+
+        if (lastAnne) {
+          els.anneLastText.textContent = lastAnne.text;
+          els.anneLastMeta.textContent = lastAnne.sentAt ? relativeTime(lastAnne.sentAt.toDate()) : "";
+        } else {
+          els.anneLastText.textContent = "Todavía no te ha escrito nada.";
+          els.anneLastMeta.textContent = "";
+        }
+      },
+      (err) => console.warn("No se pudieron cargar los mensajes:", err)
+    );
 
     els.sendBtn.addEventListener("click", async () => {
       const text = els.text.value.trim();
       if (!text) return;
       els.sendBtn.disabled = true;
       try {
-        await setDoc(docRef, { text, sentAt: serverTimestamp() });
+        await addDoc(messagesRef, { text, from: "andres", sentAt: serverTimestamp() });
         els.text.value = "";
         els.count.textContent = "0";
         els.sendStatus.textContent = "Enviado.";
