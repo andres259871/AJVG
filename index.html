@@ -53,9 +53,29 @@
   <p class="target">31 de diciembre, 2026 · Madrid</p>
 
   <p class="message" id="message"></p>
-  <p class="message-meta" id="messageMeta" hidden></p>
 
   <p class="done-message" id="doneMessage" hidden></p>
+
+  <section class="thread" aria-label="Mensajes">
+    <div class="thread-col">
+      <p class="thread-label">Andrés</p>
+      <div class="thread-list" id="andresList">
+        <p class="thread-empty">Todavía nada por aquí.</p>
+      </div>
+    </div>
+    <div class="thread-col">
+      <p class="thread-label">Anne</p>
+      <div class="thread-list" id="anneList">
+        <p class="thread-empty">Todavía nada por aquí.</p>
+      </div>
+    </div>
+  </section>
+
+  <form class="compose" id="composeForm">
+    <textarea id="composeText" maxlength="500" placeholder="Escríbele algo a Andrés…" required></textarea>
+    <button type="submit" id="composeBtn" disabled>Enviar</button>
+    <p class="compose-status" id="composeStatus" hidden></p>
+  </form>
 </main>
 
 <script src="script.js"></script>
