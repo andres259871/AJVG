@@ -36,21 +36,41 @@
 
   <section id="writeView" hidden>
     <p class="kicker">Escribirle</p>
-    <textarea id="text" maxlength="400" placeholder="Escribe aquí…"></textarea>
-    <p class="admin-count"><span id="count">0</span>/400</p>
-    <button id="sendBtn">Enviar</button>
-    <p id="sendStatus" class="admin-status" hidden></p>
+    <form class="compose" id="writeForm">
+      <div class="attach-preview" id="attachPreview" hidden>
+        <img id="attachImg" alt="" hidden />
+        <audio id="attachAudio" controls hidden></audio>
+        <button type="button" class="attach-discard" id="attachDiscard" aria-label="Descartar adjunto">✕</button>
+      </div>
+
+      <textarea id="text" maxlength="400" placeholder="Escribe aquí…"></textarea>
+      <p class="admin-count"><span id="count">0</span>/400</p>
+
+      <div class="compose-tools">
+        <button type="button" class="tool-btn" id="photoBtn" aria-label="Adjuntar foto">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        </button>
+        <input type="file" id="photoInput" accept="image/*" capture="environment" hidden />
+
+        <button type="button" class="tool-btn" id="micBtn" aria-label="Grabar audio">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+        </button>
+        <span class="rec-indicator" id="recIndicator" hidden>● <span id="recTime">0:00</span></span>
+
+        <button type="submit" id="sendBtn">Enviar</button>
+      </div>
+
+      <p id="sendStatus" class="admin-status" hidden></p>
+    </form>
 
     <div class="admin-last">
       <p class="admin-last-label">Último mensaje enviado</p>
-      <p id="lastText">—</p>
-      <p id="lastMeta" class="admin-meta"></p>
+      <div id="lastMessage" class="admin-last-content">—</div>
     </div>
 
     <div class="admin-last">
       <p class="admin-last-label">Último mensaje de Anne</p>
-      <p id="anneLastText">—</p>
-      <p id="anneLastMeta" class="admin-meta"></p>
+      <div id="anneLastMessage" class="admin-last-content">—</div>
     </div>
 
     <button id="logoutBtn" class="admin-logout" type="button">Cerrar sesión</button>
