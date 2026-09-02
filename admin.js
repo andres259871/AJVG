@@ -1,4 +1,5 @@
 import { firebaseConfig } from "./firebase-config.js";
+import { buildMessageNode, initComposer, initLightbox } from "./media.js";
 
 const els = {
   loginView: document.getElementById("loginView"),
@@ -7,16 +8,26 @@ const els = {
   email: document.getElementById("email"),
   password: document.getElementById("password"),
   loginError: document.getElementById("loginError"),
+  writeForm: document.getElementById("writeForm"),
   text: document.getElementById("text"),
   count: document.getElementById("count"),
+  photoBtn: document.getElementById("photoBtn"),
+  photoInput: document.getElementById("photoInput"),
+  micBtn: document.getElementById("micBtn"),
+  recIndicator: document.getElementById("recIndicator"),
+  recTime: document.getElementById("recTime"),
+  attachPreview: document.getElementById("attachPreview"),
+  attachImg: document.getElementById("attachImg"),
+  attachAudio: document.getElementById("attachAudio"),
+  attachDiscard: document.getElementById("attachDiscard"),
   sendBtn: document.getElementById("sendBtn"),
   sendStatus: document.getElementById("sendStatus"),
-  lastText: document.getElementById("lastText"),
-  lastMeta: document.getElementById("lastMeta"),
-  anneLastText: document.getElementById("anneLastText"),
-  anneLastMeta: document.getElementById("anneLastMeta"),
+  lastMessage: document.getElementById("lastMessage"),
+  anneLastMessage: document.getElementById("anneLastMessage"),
   logoutBtn: document.getElementById("logoutBtn"),
 };
+
+initLightbox();
 
 // Solo intentamos cargar Firebase si firebase-config.js ya tiene datos
 // reales — así, mientras no lo hayas configurado, este panel no dispara
@@ -65,15 +76,6 @@ if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "TU_API_KEY") {
       els.writeView.hidden = !user;
     });
 
-    const relativeTime = (date) => {
-      const diffMin = Math.floor((Date.now() - date.getTime()) / 60000);
-      if (diffMin < 1) return "justo ahora";
-      if (diffMin < 60) return `hace ${diffMin} min`;
-      const h = Math.floor(diffMin / 60);
-      if (h < 24) return `hace ${h} h`;
-      return `hace ${Math.floor(h / 24)} d`;
-    };
-
     onSnapshot(
       query(messagesRef, orderBy("sentAt", "desc"), limit(40)),
       (snap) => {
@@ -81,51 +83,65 @@ if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "TU_API_KEY") {
         let lastAnne = null;
         snap.forEach((docSnap) => {
           const data = docSnap.data();
-          if (!data || !data.text) return;
-          if (!lastAndres && data.from === "andres") lastAndres = data;
-          if (!lastAnne && data.from === "anne") lastAnne = data;
+          if (!data) return;
+          const entry = {
+            text: data.text || "",
+            type: data.type || "text",
+            mediaUrl: data.mediaUrl || null,
+            sentAt: data.sentAt ? data.sentAt.toDate() : null,
+          };
+          if (entry.type === "text" && !entry.text) return;
+          if (!lastAndres && data.from === "andres") lastAndres = entry;
+          if (!lastAnne && data.from === "anne") lastAnne = entry;
         });
 
-        if (lastAndres) {
-          els.lastText.textContent = lastAndres.text;
-          els.lastMeta.textContent = lastAndres.sentAt ? relativeTime(lastAndres.sentAt.toDate()) : "";
-        } else {
-          els.lastText.textContent = "Todavía no has enviado nada.";
-          els.lastMeta.textContent = "";
-        }
+        els.lastMessage.innerHTML = "";
+        els.lastMessage.appendChild(
+          lastAndres ? buildMessageNode(lastAndres) : textNode("Todavía no has enviado nada.")
+        );
 
-        if (lastAnne) {
-          els.anneLastText.textContent = lastAnne.text;
-          els.anneLastMeta.textContent = lastAnne.sentAt ? relativeTime(lastAnne.sentAt.toDate()) : "";
-        } else {
-          els.anneLastText.textContent = "Todavía no te ha escrito nada.";
-          els.anneLastMeta.textContent = "";
-        }
+        els.anneLastMessage.innerHTML = "";
+        els.anneLastMessage.appendChild(
+          lastAnne ? buildMessageNode(lastAnne) : textNode("Todavía no te ha escrito nada.")
+        );
       },
       (err) => console.warn("No se pudieron cargar los mensajes:", err)
     );
 
-    els.sendBtn.addEventListener("click", async () => {
-      const text = els.text.value.trim();
-      if (!text) return;
-      els.sendBtn.disabled = true;
-      try {
-        await addDoc(messagesRef, { text, from: "andres", sentAt: serverTimestamp() });
-        els.text.value = "";
+    initComposer({
+      form: els.writeForm,
+      textEl: els.text,
+      photoBtn: els.photoBtn,
+      photoInput: els.photoInput,
+      micBtn: els.micBtn,
+      recIndicator: els.recIndicator,
+      recTime: els.recTime,
+      attachPreview: els.attachPreview,
+      attachImg: els.attachImg,
+      attachAudio: els.attachAudio,
+      attachDiscard: els.attachDiscard,
+      sendBtn: els.sendBtn,
+      statusEl: els.sendStatus,
+      onSend: async ({ text, type, mediaUrl }) => {
+        const doc = { text, from: "andres", sentAt: serverTimestamp() };
+        if (type !== "text") {
+          doc.type = type;
+          doc.mediaUrl = mediaUrl;
+        }
+        await addDoc(messagesRef, doc);
         els.count.textContent = "0";
-        els.sendStatus.textContent = "Enviado.";
-        els.sendStatus.hidden = false;
-        setTimeout(() => (els.sendStatus.hidden = true), 2500);
-      } catch (err) {
-        els.sendStatus.textContent = "No se pudo enviar — inténtalo otra vez.";
-        els.sendStatus.hidden = false;
-      } finally {
-        els.sendBtn.disabled = false;
-      }
+      },
     });
   } catch (err) {
     els.loginError.textContent = "No se pudo cargar Firebase. Revisa tu conexión e inténtalo de nuevo.";
     els.loginError.hidden = false;
     console.warn(err);
   }
+}
+
+function textNode(text) {
+  const p = document.createElement("p");
+  p.className = "msg-text";
+  p.textContent = text;
+  return p;
 }
