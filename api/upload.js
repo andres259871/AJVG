@@ -27,13 +27,14 @@ const ALLOWED = {
   },
 };
 
-export default async function handler(request) {
-  if (request.method !== "POST") {
-    return Response.json({ error: "Método no permitido." }, { status: 405 });
-  }
-
+// Vercel invoca esto con el estilo Web fetch (Request/Response) solo si la
+// función se exporta con el nombre del método HTTP — con "export default"
+// la trata como una función Node clásica (req, res) y todo lo demás falla
+// en silencio. Por eso "POST", no "default".
+export async function POST(request) {
   const kind = request.headers.get("x-kind");
   const contentTypeHeader = request.headers.get("content-type") || "";
+  // Los navegadores a veces añaden ";codecs=opus" etc. al content-type del audio.
   const contentType = contentTypeHeader.split(";")[0].trim();
 
   const table = ALLOWED[kind];
