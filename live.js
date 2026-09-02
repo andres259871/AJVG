@@ -1,46 +1,36 @@
 // Conecta la página principal a Firebase: muestra los mensajes de Andrés y
-// de Anne en sus columnas, y deja que Anne escriba directo desde aquí, sin
-// login ni app — solo necesita tener este link abierto.
+// de Anne en sus columnas (texto, fotos, audios y vistas previas de links),
+// y deja que Anne escriba directo desde aquí, sin login ni app — solo
+// necesita tener este link abierto.
 //
 // Si Firebase no está configurado todavía (firebase-config.js sigue con
 // los valores de plantilla) o algo falla, esto simplemente no hace nada:
 // el countdown y el mensaje automático siguen funcionando igual, y las
 // columnas se quedan mostrando "todavía nada por aquí".
 import { firebaseConfig } from "./firebase-config.js";
+import { renderColumn, initComposer, initLightbox } from "./media.js";
 
 const els = {
   andresList: document.getElementById("andresList"),
   anneList: document.getElementById("anneList"),
   composeForm: document.getElementById("composeForm"),
   composeText: document.getElementById("composeText"),
+  photoBtn: document.getElementById("photoBtn"),
+  photoInput: document.getElementById("photoInput"),
+  micBtn: document.getElementById("micBtn"),
+  recIndicator: document.getElementById("recIndicator"),
+  recTime: document.getElementById("recTime"),
+  attachPreview: document.getElementById("attachPreview"),
+  attachImg: document.getElementById("attachImg"),
+  attachAudio: document.getElementById("attachAudio"),
+  attachDiscard: document.getElementById("attachDiscard"),
   composeBtn: document.getElementById("composeBtn"),
   composeStatus: document.getElementById("composeStatus"),
 };
 
 const MAX_PER_COLUMN = 8;
 
-function renderColumn(el, messages) {
-  if (!messages.length) {
-    el.innerHTML = '<p class="thread-empty">Todavía nada por aquí.</p>';
-    return;
-  }
-  const relativeTime = window.relativeTime || (() => "");
-  el.innerHTML = messages
-    .map((m) => {
-      const text = document.createElement("p");
-      text.className = "msg-text";
-      text.textContent = m.text;
-      const meta = document.createElement("p");
-      meta.className = "msg-meta";
-      meta.textContent = m.sentAt ? relativeTime(m.sentAt) : "";
-      const wrap = document.createElement("div");
-      wrap.className = "msg";
-      wrap.appendChild(text);
-      wrap.appendChild(meta);
-      return wrap.outerHTML;
-    })
-    .join("");
-}
+initLightbox();
 
 if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "TU_API_KEY") {
   try {
@@ -63,8 +53,14 @@ if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "TU_API_KEY") {
         const anne = [];
         snap.forEach((docSnap) => {
           const data = docSnap.data();
-          if (!data || !data.text) return;
-          const entry = { text: data.text, sentAt: data.sentAt ? data.sentAt.toDate() : null };
+          if (!data) return;
+          const entry = {
+            text: data.text || "",
+            type: data.type || "text",
+            mediaUrl: data.mediaUrl || null,
+            sentAt: data.sentAt ? data.sentAt.toDate() : null,
+          };
+          if (entry.type === "text" && !entry.text) return;
           if (data.from === "andres" && andres.length < MAX_PER_COLUMN) andres.push(entry);
           else if (data.from === "anne" && anne.length < MAX_PER_COLUMN) anne.push(entry);
         });
@@ -88,25 +84,28 @@ if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "TU_API_KEY") {
         console.warn("No se pudo preparar el envío de mensajes:", err);
       });
 
-    els.composeForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const text = els.composeText.value.trim();
-      if (!text) return;
-      els.composeBtn.disabled = true;
-      els.composeStatus.hidden = true;
-      try {
-        await addDoc(messagesRef, { text, from: "anne", sentAt: serverTimestamp() });
-        els.composeText.value = "";
-        els.composeStatus.textContent = "Enviado.";
-        els.composeStatus.hidden = false;
-        setTimeout(() => (els.composeStatus.hidden = true), 2500);
-      } catch (err) {
-        els.composeStatus.textContent = "No se pudo enviar — inténtalo otra vez.";
-        els.composeStatus.hidden = false;
-        console.warn(err);
-      } finally {
-        els.composeBtn.disabled = false;
-      }
+    initComposer({
+      form: els.composeForm,
+      textEl: els.composeText,
+      photoBtn: els.photoBtn,
+      photoInput: els.photoInput,
+      micBtn: els.micBtn,
+      recIndicator: els.recIndicator,
+      recTime: els.recTime,
+      attachPreview: els.attachPreview,
+      attachImg: els.attachImg,
+      attachAudio: els.attachAudio,
+      attachDiscard: els.attachDiscard,
+      sendBtn: els.composeBtn,
+      statusEl: els.composeStatus,
+      onSend: async ({ text, type, mediaUrl }) => {
+        const doc = { text, from: "anne", sentAt: serverTimestamp() };
+        if (type !== "text") {
+          doc.type = type;
+          doc.mediaUrl = mediaUrl;
+        }
+        await addDoc(messagesRef, doc);
+      },
     });
   } catch (err) {
     console.warn("No se pudo conectar con Firebase, la página sigue funcionando sin mensajes en vivo:", err);
