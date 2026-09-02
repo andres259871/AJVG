@@ -17,7 +17,10 @@
   gap: 14px;
 }
 
-textarea {
+/* Especificidad igual a ".compose textarea" de styles.css, para que gane
+   por venir después en el <head> — este panel usa una caja más grande que
+   la de la página principal. */
+.admin-wrap textarea {
   min-height: 140px;
   resize: vertical;
   font-family: "Cormorant Garamond", serif;
