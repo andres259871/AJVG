@@ -72,8 +72,28 @@
   </section>
 
   <form class="compose" id="composeForm">
-    <textarea id="composeText" maxlength="500" placeholder="Escríbele algo a Andrés…" required></textarea>
-    <button type="submit" id="composeBtn" disabled>Enviar</button>
+    <div class="attach-preview" id="attachPreview" hidden>
+      <img id="attachImg" alt="" hidden />
+      <audio id="attachAudio" controls hidden></audio>
+      <button type="button" class="attach-discard" id="attachDiscard" aria-label="Descartar adjunto">✕</button>
+    </div>
+
+    <textarea id="composeText" maxlength="500" placeholder="Escríbele algo a Andrés…"></textarea>
+
+    <div class="compose-tools">
+      <button type="button" class="tool-btn" id="photoBtn" aria-label="Adjuntar foto">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      </button>
+      <input type="file" id="photoInput" accept="image/*" capture="environment" hidden />
+
+      <button type="button" class="tool-btn" id="micBtn" aria-label="Grabar audio">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+      </button>
+      <span class="rec-indicator" id="recIndicator" hidden>● <span id="recTime">0:00</span></span>
+
+      <button type="submit" id="composeBtn" disabled>Enviar</button>
+    </div>
+
     <p class="compose-status" id="composeStatus" hidden></p>
   </form>
 </main>
