@@ -13,7 +13,11 @@ const BLOCKED_HOSTS = /(^localhost$|^127\.|^10\.|^192\.168\.|^169\.254\.|^0\.0\.
 const MAX_HTML_BYTES = 3 * 1024 * 1024;
 const FETCH_TIMEOUT_MS = 5000;
 
-export default async function handler(request) {
+// Vercel invoca esto con el estilo Web fetch (Request/Response) solo si la
+// función se exporta con el nombre del método HTTP — con "export default"
+// la trata como una función Node clásica (req, res) y "new URL(request.url)"
+// truena porque ahí request.url es relativo. Por eso "GET", no "default".
+export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const target = searchParams.get("url");
   if (!target) {
