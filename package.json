@@ -2,6 +2,7 @@
   "name": "countdown-princesa",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Cuenta regresiva + mensajes en vivo. El sitio sigue siendo estático; este package.json solo existe para que Vercel instale la dependencia que usan las dos funciones en /api.",
   "dependencies": {
     "@vercel/blob": "^2.8.0"
